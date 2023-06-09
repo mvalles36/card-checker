@@ -1,0 +1,14 @@
+{
+    "name": "storm-data",
+    "version": "1.0.0",
+    "description": "gathers historical weather data",
+    "scripts": {
+        "build": "npm run build"
+    },
+    "author": "Mark Valles",
+    "license": "MIT",
+    "dependencies": {
+        "express": "^4.17.1"
+    }
+}
+
