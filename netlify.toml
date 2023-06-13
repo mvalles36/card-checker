@@ -1,0 +1,8 @@
+[build]
+command = "echo 'This is a web app.'"
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200
+

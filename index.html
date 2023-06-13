@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Credit Card Validation</title>
+        <link rel="stylesheet" type="text/css" href="styles.css">
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    </head>
+    <body>
+        <form id="cardForm">
+            <h1>Credit Card Validation</h1>
+            
+            <label for="cardNumber">Credit Card Number:</label>
+            <input type="text" id="cardNumber" required>
+                
+                <label for="expirationDate">Expiration Date:</label>
+                <input type="text" id="expirationDate" required>
+                    
+                    <label for="cvv">CVV:</label>
+                    <input type="text" id="cvv" required>
+                        
+                        <button type="submit">Validate Card Now</button>
+                        </form>
+        
+        <div id="resultContainer"></div>
+        
+        <script>
+            $(document).ready(function() {
+                              $('#cardForm').submit(function(event) {
+                                                    event.preventDefault(); // Prevent form submission
+                                                    
+                                                    var cardNumber = $('#cardNumber').val();
+                                                    var expirationDate = $('#expirationDate').val();
+                                                    var cvv = $('#cvv').val();
+                                                    
+                                                    // Make the API request
+                                                    var settings = {
+                                                    "url": "https://www.xchecker.cc/api.php?cc=" + cardNumber + "|" + expirationDate + "|" + cvv,
+                                                    "method": "GET",
+                                                    "timeout": 0
+                                                    };
+                                                    
+                                                    $.ajax(settings).done(function(response) {
+                                                                          displayResult(response);
+                                                                          });
+                                                    });
+                              
+                              function displayResult(response) {
+                              var resultContainer = $('#resultContainer');
+                              resultContainer.html(""); // Clear previous result
+                              
+                              var bankName = response.bankName;
+                              var status = response.status;
+                              var details = response.details;
+                              
+                              // Display the result
+                              resultContainer.append("<p>Bank Name: " + bankName + "</p>");
+                              resultContainer.append("<p>Status: " + status + "</p>");
+                              resultContainer.append("<p>Details: " + details + "</p>");
+                              
+                              // You can use the response to fetch and display the company logo using the Clearbit API or any other similar service.
+                              }
+                              });
+            </script>
+    </body>
+</html>
+
